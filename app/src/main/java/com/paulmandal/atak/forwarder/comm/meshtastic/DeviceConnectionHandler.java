@@ -30,7 +30,7 @@ public class DeviceConnectionHandler extends BroadcastReceiver implements MeshSe
     private final Context mAtakContext;
     private final MeshServiceController mMeshServiceController;
     private final Logger mLogger;
-    private final IntentFilter mIntentFilter;
+    private final DocumentedIntentFilter mIntentFilter;
     private final Set<Listener> mListeners = new CopyOnWriteArraySet<>();
 
     private boolean mReceiverRegistered;
@@ -43,7 +43,7 @@ public class DeviceConnectionHandler extends BroadcastReceiver implements MeshSe
         mMeshServiceController = meshServiceController;
         mLogger = logger;
 
-        IntentFilter intentFilter = new IntentFilter();
+        DocumentedIntentFilter intentFilter = new DocumentedIntentFilter();
         intentFilter.addAction(MeshServiceConstants.ACTION_MESH_CONNECTED);
         mIntentFilter = intentFilter;
 
@@ -56,7 +56,7 @@ public class DeviceConnectionHandler extends BroadcastReceiver implements MeshSe
         mLogger.v(TAG, "Service connection state changed to: " + serviceConnectionState);
         if (serviceConnectionState == MeshServiceController.ServiceConnectionState.CONNECTED) {
             if (!mReceiverRegistered) {
-                mAtakContext.registerReceiver(this, mIntentFilter);
+                AtakBroadcast.getInstance().registerSystemReceiver(this, mIntentFilter);
                 mReceiverRegistered = true;
             }
 
@@ -93,7 +93,7 @@ public class DeviceConnectionHandler extends BroadcastReceiver implements MeshSe
 
     @Override
     public void onDestroy(Context context, MapView mapView) {
-        mAtakContext.unregisterReceiver(this);
+        AtakBroadcast.getInstance().unregisterSystemReceiver(this);
         mReceiverRegistered = false;
     }
 
